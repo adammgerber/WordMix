@@ -48,6 +48,8 @@ struct ContentView: View {
     }
     
     
+    
+    
     var body: some View {
         NavigationView{
             List{
@@ -58,7 +60,7 @@ struct ContentView: View {
                 Section {
                     ForEach(usedWords, id: \.self){ word in
                         HStack{
-                            Image(systemName: "\(word.count).circle")
+                            Image(systemName: "\(word.count).circle.fill")
                             Text(word)
                         }
                     }
