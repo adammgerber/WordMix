@@ -13,6 +13,17 @@ struct ContentView: View {
     @State private var rootWord = ""
     @State private var newWord = ""
     
+    //Error Handling
+    @State private var errorTitle = ""
+    @State private var errorMessage = ""
+    @State private var showingError = false
+    
+    func wordError(title: String, message: String){
+        errorTitle = title
+        errorMessage = message
+        showingError = true
+    }
+    
     func addNewWord() {
         //lowercase and trim the word so that theres no duplicates
         let answer = newWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
@@ -20,7 +31,19 @@ struct ContentView: View {
         //exit if the remaining string is empty
         guard answer.count > 0 else { return }
         
-        //extra validation to come
+        guard isOriginal(word: answer) else {
+            wordError(title: "Word used already", message: "Be more original")
+            return
+        }
+        guard isPossible(word: answer) else {
+            wordError(title: "Word not possible", message: "You can't spell that word from '\(rootWord)'!")
+            return
+        }
+        
+        guard isReal(word: answer) else {
+            wordError(title: "Word not recognized", message: "You can't just make them up, you know!")
+            return
+        }
         
         //using insert here instead of append because we want it to appear at the beginning of the list. Otherwise it would show off screen
         withAnimation{
@@ -93,6 +116,11 @@ struct ContentView: View {
             .navigationTitle(rootWord)
             .onSubmit(addNewWord)
             .onAppear(perform: startGame)
+            .alert(errorTitle, isPresented: $showingError){
+                Button("OK", role: .cancel) {}
+            } message : {
+                Text(errorMessage)
+            }
         }
     }
 }
