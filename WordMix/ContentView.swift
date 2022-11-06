@@ -29,6 +29,7 @@ struct ContentView: View {
         newWord = ""
     }
     
+    //Main gameplay
     func startGame() {
         //1. Find the URL for start.txt in the app bundle
         if let startWordsURL = Bundle.main.url(forResource: "start", withExtension: "txt"){
@@ -46,9 +47,32 @@ struct ContentView: View {
         fatalError("Could not load start.txt from bundle.")
         
     }
+    //Method to check if word entered doesnt exist already
+    func isOriginal(word: String) -> Bool {
+        !usedWords.contains(word)
+    }
     
+    //Method Two to check if user's input can be made from original word. Loop over user's word and if it exists in original word then remove it from copy so it cant be read twice
+    func isPossible(word: String) -> Bool {
+        var tempWord = rootWord
+        
+        for letter in word {
+            if let pos = tempWord.firstIndex(of: letter){
+                tempWord.remove(at: pos)
+            } else {
+                return false
+            }
+        }
+        return true
+    }
     
-    
+    //Method Three to check if word is an actual English word
+    func isReal(word: String) -> Bool {
+        let checker = UITextChecker()
+        let range = NSRange(location: 0, length: word.utf16.count)
+        let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
+        return misspelledRange.location == NSNotFound
+    }
     
     var body: some View {
         NavigationView{
